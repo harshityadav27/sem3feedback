@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMS Course Feedback — 2nd Year Electives</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F5F1E9;
+    --surface: #FFFFFF;
+    --surface-2: #FBF7EE;
+    --ink: #1A1815;
+    --ink-soft: #4A4238;
+    --ink-mute: #8B7355;
+    --border: #E8E0D0;
+    --accent: #C2410C;
+    --accent-soft: #FEE4D6;
+    --success: #1F5433;
+    --success-soft: #DCF4E3;
+    --amber: #F5B841;
+  }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { padding: 24px 16px 60px; }
+  .container { max-width: 760px; margin: 0 auto; }
+
+  /* Header */
+  .header { margin-bottom: 24px; text-align: center; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-mute); font-weight: 600; margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+    color: var(--ink); margin-bottom: 8px;
+  }
+  .subtitle {
+    font-size: 14px; color: var(--ink-soft); max-width: 540px;
+    margin: 0 auto;
+  }
+
+  /* Info banner */
+  .info-banner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .info-banner strong { color: var(--ink); }
+
+  /* Sections */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .section-num {
+    background: var(--ink); color: var(--bg);
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 17px; font-weight: 600; color: var(--ink);
+  }
+  .section-badge {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+    padding: 3px 8px; border-radius: 10px; text-transform: uppercase;
+    margin-left: auto;
+  }
+  .badge-core { background: var(--success-soft); color: var(--success); }
+  .badge-pick { background: var(--accent-soft); color: var(--accent); }
+
+  /* Input fields */
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  label.field-label {
+    display: block; font-size: 13px; font-weight: 500;
+    color: var(--ink); margin-bottom: 6px;
+  }
+  .required { color: var(--accent); margin-left: 2px; }
+  input[type="text"], textarea {
+    width: 100%; padding: 10px 12px;
+    font-size: 14px; font-family: inherit;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface-2); color: var(--ink);
+    transition: border-color 0.15s;
+  }
+  input[type="text"]:focus, textarea:focus {
+    outline: none; border-color: var(--ink);
+    background: var(--surface);
+  }
+  textarea { resize: vertical; min-height: 70px; }
+
+  /* Course card */
+  .course-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .course-card:last-child { margin-bottom: 0; }
+  .course-head {
+    display: flex; align-items: baseline; gap: 10px;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .course-code {
+    font-family: "SF Mono", Monaco, "Cascadia Mono", monospace;
+    font-size: 12px; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); padding: 2px 7px; border-radius: 5px;
+  }
+  .course-name {
+    font-size: 15px; font-weight: 600; color: var(--ink);
+  }
+  .course-faculty {
+    font-size: 12px; color: var(--ink-mute);
+    width: 100%; margin-top: 2px;
+  }
+
+  /* Elective picker (radio) */
+  .elective-picker {
+    display: grid; gap: 8px; margin-bottom: 16px;
+  }
+  .elective-option {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px; border: 1px solid var(--border);
+    border-radius: 10px; cursor: pointer; background: var(--surface-2);
+    transition: all 0.15s;
+  }
+  .elective-option:hover { border-color: var(--ink-mute); }
+  .elective-option input[type="radio"] {
+    margin-top: 3px; accent-color: var(--accent);
+    width: 16px; height: 16px; flex-shrink: 0;
+  }
+  .elective-option.selected {
+    background: var(--accent-soft); border-color: var(--accent);
+  }
+  .elective-option-content { flex: 1; }
+  .elective-option .course-code {
+    background: var(--surface); display: inline-block; margin-right: 6px;
+  }
+  .elective-option-name {
+    font-size: 14px; font-weight: 500; color: var(--ink);
+  }
+  .elective-option-faculty {
+    font-size: 12px; color: var(--ink-mute); margin-top: 2px;
+  }
+
+  /* Rating */
+  .rating-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+  }
+  .rating-row:first-of-type { border-top: none; padding-top: 0; }
+  .rating-label {
+    font-size: 13px; color: var(--ink-soft);
+  }
+  .rating-label small {
+    display: block; color: var(--ink-mute); font-size: 11px; margin-top: 1px;
+  }
+  .rating-stars {
+    display: flex; gap: 4px;
+  }
+  .rating-stars input[type="radio"] { display: none; }
+  .rating-stars label {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border); border-radius: 6px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    background: var(--surface); color: var(--ink-mute);
+    transition: all 0.1s;
+  }
+  .rating-stars label:hover { background: var(--surface-2); }
+  .rating-stars input[type="radio"]:checked + label {
+    background: var(--ink); color: var(--bg); border-color: var(--ink);
+  }
+
+  /* Hidden feedback (shown when elective selected) */
+  .feedback-slot {
+    display: none;
+    margin-top: 10px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .feedback-slot.active { display: block; }
+  .feedback-slot-title {
+    font-size: 12px; font-weight: 600; color: var(--ink-mute);
+    letter-spacing: 0.05em; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* Submit */
+  .submit-row {
+    display: flex; justify-content: center; margin-top: 24px;
+  }
+  button.submit-btn {
+    background: var(--ink); color: var(--bg);
+    border: none; padding: 14px 36px;
+    font-size: 15px; font-weight: 600;
+    border-radius: 10px; cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  button.submit-btn:hover { background: #000000; }
+  button.submit-btn:disabled {
+    background: var(--ink-mute); cursor: not-allowed;
+  }
+
+  /* Status messages */
+  .status-msg {
+    margin-top: 14px; padding: 12px 16px;
+    border-radius: 8px; font-size: 13px;
+    text-align: center; display: none;
+  }
+  .status-msg.success {
+    background: var(--success-soft); color: var(--success);
+    border: 1px solid var(--success); display: block;
+  }
+  .status-msg.error {
+    background: var(--accent-soft); color: var(--accent);
+    border: 1px solid var(--accent); display: block;
+  }
+
+  @media (max-width: 500px) {
+    body { padding: 16px 10px 40px; }
+    h1 { font-size: 22px; }
+    .section { padding: 16px; }
+    .course-card { padding: 14px; }
+    .rating-stars label { width: 24px; height: 24px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="eyebrow">DMS 2nd Year</div>
+    <h1>Course Feedback Form</h1>
+    <p class="subtitle">Your honest feedback helps faculty improve how these courses are being taught this semester. Takes 4–6 minutes.</p>
+  </div>
+
+  <div class="info-banner">
+    <strong>How this works:</strong> MSL709 and MSL711 are compulsory — everyone gives feedback on them. For Mon / Wed / Thu / Fri, you can only review the one elective you actually took that day.
+  </div>
+
+  <form id="feedbackForm">
+
+    <!-- SECTION 1: PERSONAL -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-title">Your details</div>
+      </div>
+      <div class="field">
+        <label class="field-label" for="name">Name<span class="required">*</span></label>
+        <input type="text" id="name" name="name" placeholder="e.g. Rahul Sharma">
+      </div>
+      <div class="field">
+        <label class="field-label" for="entry">Entry number<span class="required">*</span></label>
+        <input type="text" id="entry" name="entry" placeholder="e.g. 2024MBB1234">
+      </div>
+    </div>
+
+    <!-- SECTION 2: COMPULSORY -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-title">Compulsory courses</div>
+        <span class="section-badge badge-core">Everyone</span>
+      </div>
+
+      <!-- MSL709 -->
+      <div class="course-card">
+        <div class="course-head">
+          <span class="course-code">MSL709</span>
+          <span class="course-name">Business Research Methods</span>
+          <span class="course-faculty">Prof. Arpan Kar · 1.5 credits</span>
+        </div>
+        <!-- Rating fields generated by template -->
+        <div data-course="MSL709" class="rating-group"></div>
+      </div>
+
+      <!-- MSL711 -->
+      <div class="course-card">
+        <div class="course-head">
+          <span class="course-code">MSL711</span>
+          <span class="course-name">Strategic Management</span>
+          <span class="course-faculty">Prof. Sushil · 3 credits</span>
+        </div>
+        <div data-course="MSL711" class="rating-group"></div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: MONDAY -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div class="section-title">Monday elective</div>
+        <span class="section-badge badge-pick">Pick one</span>
+      </div>
+      <div class="elective-picker" data-day="monday">
+        <label class="elective-option">
+          <input type="radio" name="monday_pick" value="MSL7124">
+          <div class="elective-option-content">
+            <span class="course-code">MSL7124</span>
+            <span class="elective-option-name">Corporate Governance and CSR</span>
+            <div class="elective-option-faculty">Prof. Shveta Singh · 1st Half · 1.5 credits</div>
+          </div>
+        </label>
+        <label class="elective-option">
+          <input type="radio" name="monday_pick" value="MSL892">
+          <div class="elective-option-content">
+            <span class="course-code">MSL892</span>
+            <span class="elective-option-name">Predictive Analytics</span>
+            <div class="elective-option-faculty">Prof. Arpan Kar · 1st Half · 1.5 credits</div>
+          </div>
+        </label>
+      </div>
+      <div class="feedback-slot" data-slot="monday"></div>
+    </div>
+
+    <!-- SECTION 4: WEDNESDAY -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div class="section-title">Wednesday elective (Slot S)</div>
+        <span class="section-badge badge-pick">Pick one</span>
+      </div>
+      <div class="elective-picker" data-day="wednesday">
+        <label class="elective-option">
+          <input type="radio" name="wednesday_pick" value="MSL829">
+          <div class="elective-option-content">
+            <span class="course-code">MSL829</span>
+            <span class="elective-option-name">Current &amp; Emerging Issues in Strategic Mgmt</span>
+            <div class="elective-option-faculty">Prof. Rishika Nayyar · 3 credits</div>
+          </div>
+        </label>
+        <label class="elective-option">
+          <input type="radio" name="wednesday_pick" value="MSL845">
+          <div class="elective-option-content">
+            <span class="course-code">MSL845</span>
+            <span class="elective-option-name">Total Project Systems Management</span>
+            <div class="elective-option-faculty">Prof. Jitender Madaan · 3 credits</div>
+          </div>
+        </label>
+        <label class="elective-option">
+          <input type="radio" name="wednesday_pick" value="MSL873">
+          <div class="elective-option-content">
+            <span class="course-code">MSL873</span>
+            <span class="elective-option-name">Security Analysis &amp; Portfolio Management</span>
+            <div class="elective-option-faculty">Prof. Shveta Singh · 3 credits</div>
+          </div>
+        </label>
+        <label class="elective-option">
+          <input type="radio" name="wednesday_pick" value="MSL885">
+          <div class="elective-option-content">
+            <span class="course-code">MSL885</span>
+            <span class="elective-option-name">Digital Marketing - Analytics &amp; Optimization</span>
+            <div class="elective-option-faculty">Prof. Arpan Kar · 3 credits</div>
+          </div>
+        </label>
+      </div>
+      <div class="feedback-slot" data-slot="wednesday"></div>
+    </div>
+
+    <!-- SECTION 5: THURSDAY -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div class="section-title">Thursday elective (Slot T)</div>
+        <span class="section-badge badge-pick">Pick one</span>
+      </div>
+      <div class="elective-picker" data-day="thursday">
+        <label class="elective-option">
+          <input type="radio" name="thursday_pick" value="MSL843">
+          <div class="elective-option-content">
+            <span class="course-code">MSL843</span>
+            <span class="elective-option-name">Supply Chain Logistics Management</span>
+            <div class="elective-option-faculty">Prof. Ravi Shankar · 3 credits</div>
+          </div>
+        </label>
+        <label class="elective-option">
+          <input type="radio" name="thursday_pick" value="MSL861">
+          <div class="elective-option-content">
+            <span class="course-code">MSL861</span>
+            <span class="elective-option-name">Market Research</span>
+            <div class="elective-option-faculty">Prof. Avinash Jain · 3 credits</div>
+          </div>
+        </label>
+        <label class="elective-option">
+          <input type="radio" name="thursday_pick" value="MSL884">
+          <div class="elective-option-content">
+            <span class="course-code">MSL884</span>
+            <span class="elective-option-name">Information Systems Strategy</span>
+            <div class="elective-option-faculty">Prof. P.V. Ilavarasan · 3 credits</div>
+          </div>
+        </label>
+        <label class="elective-option">
+          <input type="radio" name="thursday_pick" value="MSL7219">
+          <div class="elective-option-content">
+            <span class="course-code">MSL7219</span>
+            <span class="elective-option-name">Financial Econometrics</span>
+            <div class="elective-option-faculty">Prof. Paras Sachdeva · 3 credits</div>
+          </div>
+        </label>
+        <label class="elective-option">
+          <input type="radio" name="thursday_pick" value="MDL806">
+          <div class="elective-option-content">
+            <span class="course-code">MDL806</span>
+            <span class="elective-option-name">Derivatives</span>
+            <div class="elective-option-faculty">Prof. Smita Kashiramka · 3 credits</div>
+          </div>
+        </label>
+      </div>
+      <div class="feedback-slot" data-slot="thursday"></div>
+    </div>
+
+    <!-- SECTION 6: FRIDAY -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div class="section-title">Friday elective</div>
+        <span class="section-badge badge-pick">Pick one</span>
+      </div>
+      <div class="elective-picker" data-day="friday">
+        <label class="elective-option">
+          <input type="radio" name="friday_pick" value="MSL809">
+          <div class="elective-option-content">
+            <span class="course-code">MSL809</span>
+            <span class="elective-option-name">Cyber Security: Managing Risks</span>
+            <div class="elective-option-faculty">Prof. Arghya Ray · 3 credits</div>
+          </div>
+        </label>
+        <label class="elective-option">
+          <input type="radio" name="friday_pick" value="MSL840">
+          <div class="elective-option-content">
+            <span class="course-code">MSL840</span>
+            <span class="elective-option-name">Manufacturing Strategy</span>
+            <div class="elective-option-faculty">Prof. S.P. Singh · 3 credits</div>
+          </div>
+        </label>
+        <label class="elective-option">
+          <input type="radio" name="friday_pick" value="MSL862">
+          <div class="elective-option-content">
+            <span class="course-code">MSL862</span>
+            <span class="elective-option-name">Product Management</span>
+            <div class="elective-option-faculty">Prof. Harish Chaudhry · 3 credits</div>
+          </div>
+        </label>
+      </div>
+      <div class="feedback-slot" data-slot="friday"></div>
+    </div>
+
+    <div class="submit-row">
+      <button type="submit" class="submit-btn" id="submitBtn">Submit feedback</button>
+    </div>
+    <div class="status-msg" id="statusMsg"></div>
+
+  </form>
+</div>
+
+<script>
+  // ============================================================
+  // CONFIG — PASTE YOUR GOOGLE APPS SCRIPT URL HERE
+  // ============================================================
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_QcfaREoK2_PC_c-KZIvHYUlUGTv_aTFTJIxg81bSpByFnC6R2WH4o_48k6maR6Rhcw/exec";
+
+  // Course metadata
+  const COURSES = {
+    "MSL7124": { name: "Corporate Governance and CSR", faculty: "Shveta Singh" },
+    "MSL892":  { name: "Predictive Analytics", faculty: "Arpan Kar" },
+    "MSL829":  { name: "Current & Emerging Issues in Strategic Mgmt", faculty: "Rishika Nayyar" },
+    "MSL845":  { name: "Total Project Systems Management", faculty: "Jitender Madaan" },
+    "MSL873":  { name: "Security Analysis & Portfolio Management", faculty: "Shveta Singh" },
+    "MSL885":  { name: "Digital Marketing - Analytics & Optimization", faculty: "Arpan Kar" },
+    "MSL843":  { name: "Supply Chain Logistics Management", faculty: "Ravi Shankar" },
+    "MSL861":  { name: "Market Research", faculty: "Avinash Jain" },
+    "MSL884":  { name: "Information Systems Strategy", faculty: "P.V. Ilavarasan" },
+    "MSL7219": { name: "Financial Econometrics", faculty: "Paras Sachdeva" },
+    "MDL806":  { name: "Derivatives", faculty: "Smita Kashiramka" },
+    "MSL809":  { name: "Cyber Security: Managing Risks", faculty: "Arghya Ray" },
+    "MSL840":  { name: "Manufacturing Strategy", faculty: "S.P. Singh" },
+    "MSL862":  { name: "Product Management", faculty: "Harish Chaudhry" }
+  };
+
+  // Rating dimensions
+  const DIMENSIONS = [
+    { key: "content",    label: "Content relevance",     hint: "1 = low, 5 = highly relevant" },
+    { key: "teaching",   label: "Faculty teaching",      hint: "1 = poor, 5 = excellent" },
+    { key: "workload",   label: "Workload",              hint: "1 = very light, 5 = very heavy" },
+    { key: "grading",    label: "Grading leniency",      hint: "1 = strict, 5 = lenient" },
+    { key: "overall",    label: "Overall recommendation", hint: "1 = would not recommend, 5 = must-take" }
+  ];
+
+  // Build rating fields for a course
+  function buildRatingFields(container, courseCode) {
+    container.innerHTML = "";
+    DIMENSIONS.forEach(dim => {
+      const row = document.createElement("div");
+      row.className = "rating-row";
+      row.innerHTML = `
+        <div class="rating-label">
+          ${dim.label}
+          <small>${dim.hint}</small>
+        </div>
+        <div class="rating-stars">
+          ${[1,2,3,4,5].map(n => `
+            <input type="radio" id="${courseCode}_${dim.key}_${n}" name="${courseCode}_${dim.key}" value="${n}">
+            <label for="${courseCode}_${dim.key}_${n}">${n}</label>
+          `).join("")}
+        </div>
+      `;
+      container.appendChild(row);
+    });
+    // Free text
+    const textField = document.createElement("div");
+    textField.className = "field";
+    textField.style.marginTop = "14px";
+    textField.innerHTML = `
+      <label class="field-label" for="${courseCode}_feedback">Overall feedback<span class="required">*</span></label>
+      <textarea id="${courseCode}_feedback" name="${courseCode}_feedback" placeholder="Share your honest thoughts — what's working, what isn't, what the faculty could improve..."></textarea>
+    `;
+    container.appendChild(textField);
+  }
+
+  // Build rating cards for compulsory courses
+  document.querySelectorAll(".rating-group").forEach(group => {
+    const code = group.getAttribute("data-course");
+    buildRatingFields(group, code);
+  });
+
+  // Handle elective pick → show feedback slot
+  document.querySelectorAll(".elective-picker").forEach(picker => {
+    const day = picker.getAttribute("data-day");
+    const slot = document.querySelector(`.feedback-slot[data-slot="${day}"]`);
+
+    picker.addEventListener("change", (e) => {
+      // Visual selection
+      picker.querySelectorAll(".elective-option").forEach(opt => opt.classList.remove("selected"));
+      e.target.closest(".elective-option").classList.add("selected");
+
+      const chosen = e.target.value;
+      if (!chosen) {
+        slot.classList.remove("active");
+        slot.innerHTML = "";
+        return;
+      }
+
+      const meta = COURSES[chosen];
+      slot.classList.add("active");
+      slot.innerHTML = `
+        <div class="feedback-slot-title">Feedback for ${chosen} — ${meta.name}</div>
+        <div class="rating-group" data-course="${chosen}"></div>
+      `;
+      buildRatingFields(slot.querySelector(".rating-group"), chosen);
+    });
+  });
+
+  // Validate the form and return the first problem (or null if all good)
+  function validateForm(formEl) {
+    const name = formEl.querySelector("#name").value.trim();
+    if (!name) return { el: formEl.querySelector("#name"), msg: "Please enter your name." };
+
+    const entry = formEl.querySelector("#entry").value.trim();
+    if (!entry) return { el: formEl.querySelector("#entry"), msg: "Please enter your entry number." };
+
+    // Compulsory courses
+    for (const code of ["MSL709", "MSL711"]) {
+      for (const dim of DIMENSIONS) {
+        const checked = formEl.querySelector(`input[name="${code}_${dim.key}"]:checked`);
+        if (!checked) {
+          return {
+            el: formEl.querySelector(`input[name="${code}_${dim.key}"]`),
+            msg: `Please rate "${dim.label}" for ${code}.`
+          };
+        }
+      }
+      const fb = formEl.querySelector(`[name="${code}_feedback"]`);
+      if (!fb || !fb.value.trim()) {
+        return { el: fb, msg: `Please write overall feedback for ${code}.` };
+      }
+    }
+
+    // Day picks + per-day feedback
+    const days = ["monday", "wednesday", "thursday", "friday"];
+    const dayLabels = { monday: "Monday", wednesday: "Wednesday", thursday: "Thursday", friday: "Friday" };
+    for (const day of days) {
+      const pick = formEl.querySelector(`input[name="${day}_pick"]:checked`);
+      if (!pick) {
+        return {
+          el: formEl.querySelector(`input[name="${day}_pick"]`),
+          msg: `Please pick a course for ${dayLabels[day]}.`
+        };
+      }
+      const code = pick.value;
+      for (const dim of DIMENSIONS) {
+        const checked = formEl.querySelector(`input[name="${code}_${dim.key}"]:checked`);
+        if (!checked) {
+          return {
+            el: formEl.querySelector(`input[name="${code}_${dim.key}"]`),
+            msg: `Please rate "${dim.label}" for ${code} (${dayLabels[day]}).`
+          };
+        }
+      }
+      const fb = formEl.querySelector(`[name="${code}_feedback"]`);
+      if (!fb || !fb.value.trim()) {
+        return { el: fb, msg: `Please write overall feedback for ${code} (${dayLabels[day]}).` };
+      }
+    }
+
+    return null;
+  }
+
+  // Submit handler
+  document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("submitBtn");
+    const statusMsg = document.getElementById("statusMsg");
+    const form = e.target;
+
+    // Custom validation
+    const problem = validateForm(form);
+    if (problem) {
+      statusMsg.className = "status-msg error";
+      statusMsg.textContent = "✗ " + problem.msg;
+      if (problem.el) {
+        problem.el.scrollIntoView({ behavior: "smooth", block: "center" });
+        try { problem.el.focus(); } catch (_) {}
+      }
+      return;
+    }
+
+    const formData = new FormData(form);
+    const payload = {};
+    for (const [k, v] of formData.entries()) payload[k] = v;
+    payload.submitted_at = new Date().toISOString();
+
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+    statusMsg.className = "status-msg";
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+
+      statusMsg.className = "status-msg success";
+      statusMsg.textContent = "✓ Thanks! Your feedback has been submitted.";
+      btn.textContent = "Submitted";
+      form.reset();
+      document.querySelectorAll(".feedback-slot").forEach(s => { s.classList.remove("active"); s.innerHTML = ""; });
+      document.querySelectorAll(".elective-option").forEach(o => o.classList.remove("selected"));
+      document.querySelectorAll(".rating-group[data-course='MSL709'], .rating-group[data-course='MSL711']").forEach(g => {
+        const code = g.getAttribute("data-course");
+        buildRatingFields(g, code);
+      });
+      statusMsg.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => { btn.disabled = false; btn.textContent = "Submit feedback"; }, 3000);
+    } catch (err) {
+      statusMsg.className = "status-msg error";
+      statusMsg.textContent = "✗ Submission failed. Please try again or screenshot and share with the coordinator.";
+      btn.disabled = false;
+      btn.textContent = "Submit feedback";
+    }
+  });
+</script>
+</body>
+</html>
